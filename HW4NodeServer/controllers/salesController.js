@@ -13,7 +13,7 @@ exports.getAllSales = (req, res, next) => {
 
 
 exports.getSaleById = (req, res, next) => {
-    Sales.findById(req.params.id)
+    Sales.findById(req.params.salesId)
         .then(([sale, fieldData]) => {
             if (sale.length > 0) {
                 res.json({ sale: sale[0] });
