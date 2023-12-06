@@ -72,6 +72,17 @@ exports.postAddCustomer = (req, res, next) => {
         });
 };
 
+exports.deleteCustomerById = (req, res, next) => {
+    Customer.deleteById(req.params.customerId)
+        .then(() => {
+            res.json({ message: 'Customer deleted successfully' });
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: err.message });
+        });
+}
+
 
 
 

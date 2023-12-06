@@ -40,4 +40,26 @@ exports.postAddItem = (req, res, next) => {
         });
 };
 
+exports.postEditItem = (req, res, next) => {
+    const item = new Item(req.body.id, req.body.name, req.body.price);
+    item.update()
+        .then(() => {
+            res.json({ message: 'Item updated successfully' });
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: err.message });
+        });
+};
+
+exports.deleteItemById = (req, res, next) => {
+    Item.deleteById(req.params.itemId)
+        .then(() => {
+            res.json({ message: 'Item deleted successfully' });
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: err.message });
+        });
+}
 

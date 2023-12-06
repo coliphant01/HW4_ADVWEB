@@ -53,6 +53,16 @@ function Customers() {
             .catch(err => console.error('Error:', err));
     };
 
+    const handleDelete = (customer) => {
+        fetch(`http://localhost:8000/customers/${customer.CustomerID}`, {
+            method: 'DELETE'
+        })
+            .then(() => {
+                fetchCustomers(); // Re-fetch customers after deleting
+            })
+            .catch(err => console.error('Error:', err));
+    };
+
 
     const handleShowUpdateModal = (customer) => {
         setCurrentCustomer({id: customer.CustomerID, name: customer.CustomerName, email: customer.CustomerEmail});
@@ -123,6 +133,11 @@ function Customers() {
                                     <td>
                                         <Button variant = "primary" onClick = {() => handleShowUpdateModal(customer)}>
                                             Update
+                                        </Button>
+                                    </td>
+                                    <td>
+                                        <Button variant = "danger" onClick = {() => handleDelete(customer)}>
+                                            Delete
                                         </Button>
                                     </td>
                                 </tr>

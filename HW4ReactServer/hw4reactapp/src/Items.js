@@ -8,6 +8,8 @@ function Items() {
     const [isPending, setIsPending] = useState(true);
     const [error, setError] = useState(null);
 
+    const [currentItem, setCurrentItem] = useState({id: '', name: '', price: ''});
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
     const fetchItems = () => {
         setIsPending(true);
         fetch('http://localhost:8000/items')
@@ -47,6 +49,39 @@ function Items() {
             })
             .catch(err => console.error('Error:', err));
     };
+    const handleShowUpdateModal = (item) => {
+        setCurrentItem({id: item.ItemID, name: item.ItemName, price: item.ItemPrice});
+        setShowUpdateModal(true);
+    };
+    const handleCloseUpdateModal = () => setShowUpdateModal(false);
+
+    const handleUpdateInputChange = (e) => {
+        setCurrentItem({...currentItem, [e.target.name]: e.target.value});
+    };
+
+    const handleUpdateSubmit = (e) => {
+        e.preventDefault();
+        fetch(`http://localhost:8000/items/${currentItem.id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(currentItem)
+        })
+            .then(() => {
+                setShowUpdateModal(false);
+                fetchItems(); // Re-fetch items after updating
+            })
+            .catch(err => console.error('Error:', err));
+    };
+
+    const handleDelete = (item) => {
+        fetch(`http://localhost:8000/items/${item.ItemID}`, {
+            method: 'DELETE'
+        })
+            .then(() => {
+                fetchItems(); // Re-fetch items after deleting
+            })
+            .catch(err => console.error('Error:', err));
+    };
 
     return (
         <Row>
@@ -69,8 +104,19 @@ function Items() {
                                 <tr key = {item.ItemID}>
                                     <td className = "break-word">{item.ItemName}</td>
                                     <td>${item.ItemPrice}</td>
+                                    <td>
+                                        <Button variant = "primary" onClick = {() => handleShowUpdateModal(item)}>
+                                            Update
+                                        </Button>
+                                    </td>
+                                    <td>
+                                        <Button variant = "danger" onClick = {() => handleDelete(item)}>
+                                            Delete
+                                        </Button>
+                                    </td>
                                 </tr>
                             ))}
+
                             </tbody>
                         </Table>
                         <Button variant = "success" onClick = {handleShowModal} style = {{marginTop: '20px'}}>
@@ -105,6 +151,37 @@ function Items() {
                         </Form.Group>
                         <Button variant = "primary" type = "submit">
                             Add Item
+                        </Button>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+
+            <Modal show = {showUpdateModal} onHide = {handleCloseUpdateModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Update Item</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form onSubmit = {handleUpdateSubmit}>
+                        <Form.Group className = "mb-3">
+                            <Form.Label>Item Name</Form.Label>
+                            <Form.Control
+                                type = "text"
+                                name = "name"
+                                required
+                                value = {currentItem.name}
+                                onChange = {handleUpdateInputChange} />
+                        </Form.Group>
+                        <Form.Group className = "mb-3">
+                            <Form.Label>Item Price</Form.Label>
+                            <Form.Control
+                                type = "text"
+                                name = "price"
+                                required
+                                value = {currentItem.price}
+                                onChange = {handleUpdateInputChange} />
+                        </Form.Group>
+                        <Button variant = "primary" type = "submit">
+                            Update Item
                         </Button>
                     </Form>
                 </Modal.Body>
